@@ -37,25 +37,31 @@ document.addEventListener('DOMContentLoaded', async () => {
     setInterval(updateClock, 1000);
 
     try {
-        // CRITICAL: Wait for dataManager to be available from data.js
         console.log('[Init] Waiting for dataManager...');
         await waitForDataManager();
-        console.log('[Init] dataManager found:', window.dataManager);
+        console.log('[Init] dataManager found. Ensuring user session...');
 
-        // Ensure user is loaded ON THE WINDOW.DATAMANAGER INSTANCE
-        await window.dataManager.ensureUser();
-        console.log('[Init] User ensured:', window.dataManager.user);
+        // Wait for user session to be fully established before routing
+        const user = await window.dataManager.ensureUser();
+
+        if (!user && window.location.pathname !== '/login.html' && window.location.pathname !== '/' && window.location.pathname !== '/landing.html') {
+            console.warn('[Init] No active session, redirecting to login...');
+            window.location.href = 'login.html';
+            return;
+        }
+
+        console.log('[Init] Session verified. Initializing page logic...');
 
         // Initialize page-specific logic
         const path = window.location.pathname;
-        if (path.includes('app.html') || path === '/') {
-            initDashboard();
+        if (path.includes('app.html') || path === '/dashboard') {
+            await initDashboard();
         } else if (path.includes('activity.html')) {
-            initActivityLog();
+            await initActivityLog();
         } else if (path.includes('meals.html')) {
-            initMealPlanner();
+            await initMealPlanner();
         } else if (path.includes('insights.html')) {
-            initInsights();
+            await initInsights();
         }
     } catch (error) {
         console.error('[Init] Failed to initialize:', error);
