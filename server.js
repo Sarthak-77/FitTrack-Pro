@@ -26,6 +26,11 @@ app.get('/dashboard', (req, res) => {
     res.sendFile(path.join(__dirname, 'app.html'));
 });
 
+// Redirect old index.html to app.html (for OAuth redirects)
+app.get('/index.html', (req, res) => {
+    res.redirect('/app.html');
+});
+
 app.get('/login', (req, res) => {
     res.sendFile(path.join(__dirname, 'login.html'));
 });
