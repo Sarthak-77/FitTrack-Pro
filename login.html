@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitTrack Pro - Welcome</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            background: #050505;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .login-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Subtle Background Animation */
+        .bg-gradient {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 50% 50%, rgba(99, 102, 241, 0.15), transparent 50%);
+            animation: pulse-bg 10s infinite ease-in-out;
+            z-index: 0;
+        }
+
+        @keyframes pulse-bg {
+
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: 0.5;
+            }
+
+            50% {
+                transform: scale(1.2);
+                opacity: 0.8;
+            }
+        }
+
+        /* Auth Card */
+        .auth-card {
+            width: 100%;
+            max-width: 420px;
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 1.5rem;
+            padding: 2.5rem;
+            position: relative;
+            z-index: 1;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .auth-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 1.5rem;
+            display: inline-block;
+            text-decoration: none;
+        }
+
+        .logo span {
+            background: linear-gradient(to right, #6366f1, #ec4899);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #fff;
+            margin: 0 0 0.5rem 0;
+        }
+
+        .auth-subtitle {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.95rem;
+            margin: 0;
+        }
+
+        /* Buttons */
+        .auth-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .auth-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            padding: 0.875rem;
+            border-radius: 0.75rem;
+            font-weight: 500;
+            font-size: 0.95rem;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+            transition: all 0.2s ease;
+        }
+
+        .auth-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            margin: 1.5rem 0;
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 0.85rem;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .divider span {
+            padding: 0 1rem;
+        }
+
+        /* Form */
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border-radius: 0.75rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.2);
+            color: #fff;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+            box-sizing: border-box;
+            /* Fix width issue */
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #6366f1;
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 1rem;
+            border-radius: 0.75rem;
+            border: none;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-top: 1rem;
+        }
+
+        .submit-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+
+        .toggle-auth {
+            text-align: center;
+            margin-top: 1.5rem;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.9rem;
+        }
+
+        .toggle-auth a {
+            color: #6366f1;
+            text-decoration: none;
+            font-weight: 600;
+            margin-left: 0.25rem;
+        }
+
+        .toggle-auth a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="login-container">
+        <div class="bg-gradient"></div>
+
+        <div class="auth-card">
+            <div class="auth-header">
+                <a href="landing.html" class="logo">FitTrack<span>Pro</span></a>
+                <h2 id="auth-title">Create Your Account</h2>
+                <p class="auth-subtitle" id="auth-subtitle">Join FitTrack Pro and start your wellness journey</p>
+            </div>
+
+            <div class="auth-buttons">
+                <button class="auth-btn" onclick="signInWithGoogle()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                            fill="#4285F4" />
+                        <path
+                            d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                            fill="#34A853" />
+                        <path
+                            d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+                            fill="#FBBC05" />
+                        <path
+                            d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                            fill="#EA4335" />
+                    </svg>
+                    Google
+                </button>
+
+                <button class="auth-btn" onclick="signInWithFacebook()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="#1877F2">
+                        <path
+                            d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+                    </svg>
+                    Facebook
+                </button>
+            </div>
+
+            <div class="divider">
+                <span>or continue with email</span>
+            </div>
+
+            <form class="email-form" id="email-form" onsubmit="handleEmailAuth(event)">
+                <div class="form-group">
+                    <label for="contact">Email</label>
+                    <input type="email" id="contact" placeholder="you@example.com" required>
+                </div>
+
+                <div class="form-group" id="password-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" placeholder="Create a password (min. 6 characters)" required
+                        minlength="6">
+                </div>
+
+                <div class="form-group" id="confirm-password-group">
+                    <label for="confirm-password">Confirm Password</label>
+                    <input type="password" id="confirm-password" placeholder="••••••••" required minlength="6">
+                </div>
+
+                <button type="submit" class="submit-btn">
+                    <span id="submit-text">Sign Up</span>
+                </button>
+            </form>
+
+            <div class="toggle-auth">
+                <span id="toggle-text">Already have an account?</span>
+                <a href="#" onclick="toggleAuthMode(event)" id="toggle-link">Sign In</a>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { supabase } from './js/supabase.js';
+
+        // Check URL parameters to determine initial mode
+        const urlParams = new URLSearchParams(window.location.search);
+        const mode = urlParams.get('mode');
+        let isSignUp = mode !== 'signin'; // If mode=signin, show sign in form; otherwise show sign up
+
+        function toggleAuthMode(e) {
+            e.preventDefault();
+            isSignUp = !isSignUp;
+
+            const title = document.getElementById('auth-title');
+            const subtitle = document.getElementById('auth-subtitle');
+            const submitText = document.getElementById('submit-text');
+            const toggleText = document.getElementById('toggle-text');
+            const toggleLink = document.getElementById('toggle-link');
+            const contactInput = document.getElementById('contact');
+            const contactLabel = contactInput.previousElementSibling;
+            const passwordInput = document.getElementById('password');
+            const confirmPasswordGroup = document.getElementById('confirm-password-group');
+
+            if (isSignUp) {
+                title.textContent = 'Create Your Account';
+                subtitle.textContent = 'Join FitTrack Pro and start your wellness journey';
+                submitText.textContent = 'Sign Up';
+                toggleText.textContent = 'Already have an account?';
+                toggleLink.textContent = 'Sign In';
+                contactLabel.textContent = 'Email';
+                contactInput.placeholder = 'you@example.com';
+                contactInput.type = 'email';
+                passwordInput.placeholder = 'Create a password (min. 6 characters)';
+                confirmPasswordGroup.style.display = 'block';
+                document.getElementById('confirm-password').required = true;
+            } else {
+                title.textContent = 'Welcome Back';
+                subtitle.textContent = 'Sign in to continue your wellness journey';
+                submitText.textContent = 'Sign In';
+                toggleText.textContent = "Don't have an account?";
+                toggleLink.textContent = 'Sign Up';
+                contactLabel.textContent = 'Email';
+                contactInput.placeholder = 'you@example.com';
+                contactInput.type = 'email';
+                passwordInput.placeholder = 'Enter your password';
+                confirmPasswordGroup.style.display = 'none';
+                document.getElementById('confirm-password').required = false;
+            }
+        }
+
+        // Google Sign In
+        async function signInWithGoogle() {
+            const { data, error } = await supabase.auth.signInWithOAuth({
+                provider: 'google',
+                options: {
+                    redirectTo: window.location.origin + '/index.html'
+                }
+            });
+
+            if (error) {
+                console.error('Error signing in with Google:', error);
+                alert('Error signing in with Google. Please try again.');
+            }
+        }
+
+        // Facebook Sign In
+        async function signInWithFacebook() {
+            const { data, error } = await supabase.auth.signInWithOAuth({
+                provider: 'facebook',
+                options: {
+                    redirectTo: window.location.origin + '/index.html',
+                    scopes: 'public_profile,email'
+                }
+            });
+
+            if (error) {
+                console.error('Error signing in with Facebook:', error);
+                alert('Error signing in with Facebook. Please try again.');
+            }
+        }
+
+        // Email/Password Auth
+        async function handleEmailAuth(e) {
+            e.preventDefault();
+
+            const email = document.getElementById('contact').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+
+            if (isSignUp) {
+                // Validate passwords match
+                if (password !== confirmPassword) {
+                    alert('Passwords do not match!');
+                    return;
+                }
+
+                // Sign up
+                const { data, error } = await supabase.auth.signUp({
+                    email: email,
+                    password: password,
+                    options: {
+                        data: {
+                            name: email.split('@')[0] // Use email prefix as default name
+                        }
+                    }
+                });
+
+                if (error) {
+                    console.error('Error signing up:', error);
+                    alert('Error creating account: ' + error.message);
+                    return;
+                }
+
+                alert('Account created! Please check your email to verify your account.');
+            } else {
+                // Sign in
+                const { data, error } = await supabase.auth.signInWithPassword({
+                    email: email,
+                    password: password
+                });
+
+                if (error) {
+                    console.error('Error signing in:', error);
+                    alert('Error signing in: ' + error.message);
+                    return;
+                }
+
+                window.location.href = '/index.html';
+            }
+        }
+
+        // Check if already authenticated
+        window.addEventListener('DOMContentLoaded', async () => {
+            const { data: { session } } = await supabase.auth.getSession();
+
+            if (session) {
+                window.location.href = '/index.html';
+            }
+
+            // Initialize the form based on the mode
+            if (!isSignUp) {
+                // Manually trigger the UI update for sign-in mode
+                const title = document.getElementById('auth-title');
+                const subtitle = document.getElementById('auth-subtitle');
+                const submitText = document.getElementById('submit-text');
+                const toggleText = document.getElementById('toggle-text');
+                const toggleLink = document.getElementById('toggle-link');
+                const contactInput = document.getElementById('contact');
+                const contactLabel = contactInput.previousElementSibling;
+                const passwordInput = document.getElementById('password');
+                const confirmPasswordGroup = document.getElementById('confirm-password-group');
+
+                title.textContent = 'Welcome Back';
+                subtitle.textContent = 'Sign in to continue your wellness journey';
+                submitText.textContent = 'Sign In';
+                toggleText.textContent = "Don't have an account?";
+                toggleLink.textContent = 'Sign Up';
+                contactLabel.textContent = 'Email';
+                contactInput.placeholder = 'you@example.com';
+                contactInput.type = 'email';
+                passwordInput.placeholder = 'Enter your password';
+                confirmPasswordGroup.style.display = 'none';
+                document.getElementById('confirm-password').required = false;
+            }
+        });
+
+        // Make functions global
+        window.toggleAuthMode = toggleAuthMode;
+        window.signInWithGoogle = signInWithGoogle;
+        window.signInWithFacebook = signInWithFacebook;
+        window.handleEmailAuth = handleEmailAuth;
+    </script>
+</body>
+
+</html>

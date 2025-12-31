@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitTrack Pro - Test Edit Functions</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+
+        button:hover {
+            background: #2563eb;
+        }
+
+        .result {
+            margin-top: 10px;
+            padding: 10px;
+            background: #f0f0f0;
+            border-radius: 4px;
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>FitTrack Pro - Edit Functions Test Page</h1>
+
+    <div class="test-section">
+        <h2>Test 1: DataManager Initialization</h2>
+        <button onclick="testDataManagerInit()">Test DataManager</button>
+        <div id="result1" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Test 2: Edit Steps Function</h2>
+        <button onclick="testEditSteps()">Test Edit Steps</button>
+        <div id="result2" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Test 3: Edit Calories Function</h2>
+        <button onclick="testEditCalories()">Test Edit Calories</button>
+        <div id="result3" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Test 4: Edit Water Function</h2>
+        <button onclick="testEditWater()">Test Edit Water</button>
+        <div id="result4" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Test 5: Activity Functions</h2>
+        <button onclick="testActivityFunctions()">Test Activity Edit/Delete</button>
+        <div id="result5" class="result"></div>
+    </div>
+
+    <script type="module">
+        import { getCurrentUser } from './js/supabase.js';
+
+        window.testDataManagerInit = async function () {
+            const result = document.getElementById('result1');
+            try {
+                result.textContent = 'Testing...';
+
+                // Check if dataManager exists
+                if (typeof window.dataManager === 'undefined') {
+                    result.className = 'result error';
+                    result.textContent = '❌ FAIL: dataManager is not defined';
+                    return;
+                }
+
+                // Test ensureUser
+                await window.dataManager.ensureUser();
+                const user = window.dataManager.user;
+
+                if (user) {
+                    result.className = 'result success';
+                    result.textContent = `✅ PASS: DataManager initialized. User: ${user.email}`;
+                } else {
+                    result.className = 'result error';
+                    result.textContent = '❌ FAIL: User is null after ensureUser()';
+                }
+            } catch (error) {
+                result.className = 'result error';
+                result.textContent = `❌ ERROR: ${error.message}`;
+            }
+        };
+
+        window.testEditSteps = async function () {
+            const result = document.getElementById('result2');
+            try {
+                result.textContent = 'Testing...';
+
+                // Check if function exists
+                if (typeof window.editSteps === 'undefined') {
+                    result.className = 'result error';
+                    result.textContent = '❌ FAIL: editSteps function is not defined';
+                    return;
+                }
+
+                // Get current stats
+                await window.dataManager.ensureUser();
+                const stats = await window.dataManager.getTodayStats();
+
+                if (stats) {
+                    result.className = 'result success';
+                    result.textContent = `✅ PASS: editSteps function exists. Current steps: ${stats.steps}`;
+                } else {
+                    result.className = 'result error';
+                    result.textContent = '❌ FAIL: Could not get today stats';
+                }
+            } catch (error) {
+                result.className = 'result error';
+                result.textContent = `❌ ERROR: ${error.message}`;
+            }
+        };
+
+        window.testEditCalories = async function () {
+            const result = document.getElementById('result3');
+            try {
+                result.textContent = 'Testing...';
+
+                if (typeof window.editCalories === 'undefined') {
+                    result.className = 'result error';
+                    result.textContent = '❌ FAIL: editCalories function is not defined';
+                    return;
+                }
+
+                await window.dataManager.ensureUser();
+                const stats = await window.dataManager.getTodayStats();
+
+                if (stats) {
+                    result.className = 'result success';
+                    result.textContent = `✅ PASS: editCalories function exists. Current calories: ${stats.calories_burned}`;
+                } else {
+                    result.className = 'result error';
+                    result.textContent = '❌ FAIL: Could not get today stats';
+                }
+            } catch (error) {
+                result.className = 'result error';
+                result.textContent = `❌ ERROR: ${error.message}`;
+            }
+        };
+
+        window.testEditWater = async function () {
+            const result = document.getElementById('result4');
+            try {
+                result.textContent = 'Testing...';
+
+                if (typeof window.editWater === 'undefined') {
+                    result.className = 'result error';
+                    result.textContent = '❌ FAIL: editWater function is not defined';
+                    return;
+                }
+
+                await window.dataManager.ensureUser();
+                const stats = await window.dataManager.getTodayStats();
+
+                if (stats) {
+                    result.className = 'result success';
+                    result.textContent = `✅ PASS: editWater function exists. Current water: ${stats.water_intake}ml`;
+                } else {
+                    result.className = 'result error';
+                    result.textContent = '❌ FAIL: Could not get today stats';
+                }
+            } catch (error) {
+                result.className = 'result error';
+                result.textContent = `❌ ERROR: ${error.message}`;
+            }
+        };
+
+        window.testActivityFunctions = async function () {
+            const result = document.getElementById('result5');
+            try {
+                result.textContent = 'Testing...';
+
+                if (typeof window.editActivity === 'undefined') {
+                    result.className = 'result error';
+                    result.textContent = '❌ FAIL: editActivity function is not defined';
+                    return;
+                }
+
+                if (typeof window.deleteActivity === 'undefined') {
+                    result.className = 'result error';
+                    result.textContent = '❌ FAIL: deleteActivity function is not defined';
+                    return;
+                }
+
+                await window.dataManager.ensureUser();
+                const activities = await window.dataManager.getActivities();
+
+                result.className = 'result success';
+                result.textContent = `✅ PASS: Both activity functions exist. Total activities: ${activities.length}`;
+            } catch (error) {
+                result.className = 'result error';
+                result.textContent = `❌ ERROR: ${error.message}`;
+            }
+        };
+    </script>
+    <script type="module" src="js/supabase.js"></script>
+    <script type="module" src="js/data.js"></script>
+    <script type="module" src="js/app.js"></script>
+    <script type="module" src="js/auth.js"></script>
+</body>
+
+</html>

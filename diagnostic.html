@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Stats Diagnostic</title>
+    <style>
+        body {
+            font-family: monospace;
+            padding: 20px;
+        }
+
+        .success {
+            color: green;
+        }
+
+        .error {
+            color: red;
+        }
+
+        .info {
+            color: blue;
+        }
+
+        pre {
+            background: #f5f5f5;
+            padding: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Stats Diagnostic Tool</h1>
+    <button onclick="runTest()">Run Full Test</button>
+    <div id="output"></div>
+
+    <script type="module">
+        import { supabase, getCurrentUser } from './js/supabase.js';
+        import './js/data.js';
+
+        window.runTest = async function () {
+            const output = document.getElementById('output');
+            output.innerHTML = '<h2>Running diagnostic...</h2>';
+
+            try {
+                // Test 1: Check user
+                output.innerHTML += '<h3>Test 1: User Authentication</h3>';
+                const user = await getCurrentUser();
+                if (user) {
+                    output.innerHTML += `<p class="success">✅ User logged in: ${user.email}</p>`;
+                } else {
+                    output.innerHTML += `<p class="error">❌ No user found</p>`;
+                    return;
+                }
+
+                // Test 2: Check dataManager
+                output.innerHTML += '<h3>Test 2: DataManager</h3>';
+                await dataManager.ensureUser();
+                if (dataManager.user) {
+                    output.innerHTML += `<p class="success">✅ DataManager initialized</p>`;
+                } else {
+                    output.innerHTML += `<p class="error">❌ DataManager user is null</p>`;
+                    return;
+                }
+
+                // Test 3: Get today's date
+                output.innerHTML += '<h3>Test 3: Date Calculation</h3>';
+                const localDate = dataManager.getLocalDate();
+                const utcDate = new Date().toISOString().split('T')[0];
+                output.innerHTML += `<p class="info">Local Date: ${localDate}</p>`;
+                output.innerHTML += `<p class="info">UTC Date: ${utcDate}</p>`;
+                if (localDate !== utcDate) {
+                    output.innerHTML += `<p class="error">⚠️ Date mismatch detected!</p>`;
+                }
+
+                // Test 4: Get today's stats
+                output.innerHTML += '<h3>Test 4: Get Today Stats</h3>';
+                const stats = await dataManager.getTodayStats();
+                if (stats) {
+                    output.innerHTML += `<p class="success">✅ Stats loaded successfully</p>`;
+                    output.innerHTML += `<pre>${JSON.stringify(stats, null, 2)}</pre>`;
+                } else {
+                    output.innerHTML += `<p class="error">❌ getTodayStats returned null</p>`;
+                    return;
+                }
+
+                // Test 5: Update water
+                output.innerHTML += '<h3>Test 5: Update Water (+250ml)</h3>';
+                const beforeWater = stats.water_intake;
+                output.innerHTML += `<p class="info">Water before: ${beforeWater}ml</p>`;
+
+                await dataManager.updateWater(250);
+                output.innerHTML += `<p class="success">✅ Update command sent</p>`;
+
+                // Wait a moment then check
+                await new Promise(r => setTimeout(r, 500));
+                const statsAfter = await dataManager.getTodayStats();
+                const afterWater = statsAfter.water_intake;
+                output.innerHTML += `<p class="info">Water after: ${afterWater}ml</p>`;
+
+                if (afterWater === beforeWater + 250) {
+                    output.innerHTML += `<p class="success">✅ Water updated correctly in database!</p>`;
+                } else {
+                    output.innerHTML += `<p class="error">❌ Water not updated. Expected ${beforeWater + 250}, got ${afterWater}</p>`;
+                }
+
+                // Test 6: Check what dashboard would show
+                output.innerHTML += '<h3>Test 6: Dashboard Display Test</h3>';
+                output.innerHTML += `<p class="info">If you reload the dashboard now, it should show:</p>`;
+                output.innerHTML += `<ul>`;
+                output.innerHTML += `<li>Steps: ${statsAfter.steps}</li>`;
+                output.innerHTML += `<li>Calories: ${statsAfter.calories_burned}</li>`;
+                output.innerHTML += `<li>Water: ${statsAfter.water_intake}ml</li>`;
+                output.innerHTML += `</ul>`;
+
+                output.innerHTML += '<h3 class="success">✅ All tests passed!</h3>';
+                output.innerHTML += '<p><a href="index.html">Go to Dashboard</a> to verify the values match</p>';
+
+            } catch (error) {
+                output.innerHTML += `<p class="error">❌ Error: ${error.message}</p>`;
+                output.innerHTML += `<pre>${error.stack}</pre>`;
+            }
+        };
+    </script>
+</body>
+
+</html>

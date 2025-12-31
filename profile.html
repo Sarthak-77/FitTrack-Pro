@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - FitTrack Pro</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <nav class="navbar">
+        <a href="index.html" class="brand">FitTrack Pro</a>
+        <div class="nav-links">
+            <a href="index.html" class="nav-link">Dashboard</a>
+            <a href="activity.html" class="nav-link">Activity Log</a>
+            <a href="meals.html" class="nav-link">Meals</a>
+            <a href="insights.html" class="nav-link">Insights</a>
+        </div>
+        <button onclick="logout()" class="btn btn-secondary nav-logout"
+            style="background: transparent; border: 1px solid var(--danger-color); color: var(--danger-color); padding: 0.5rem 1rem; margin-left: auto;">
+            Logout
+        </button>
+    </nav>
+
+    <main class="container">
+        <section class="page-header">
+            <h1>My Profile</h1>
+            <p class="text-muted">Manage your account settings and preferences</p>
+        </section>
+
+        <section class="profile-section">
+            <div class="profile-card">
+                <div class="profile-header">
+                    <div class="profile-avatar" id="profile-avatar">
+                        <img id="avatar-img" src="" alt="Profile" style="display: none;">
+                        <div id="avatar-placeholder" class="avatar-placeholder">
+                            <span id="avatar-initials"></span>
+                        </div>
+                    </div>
+                    <div class="profile-info">
+                        <h2 id="user-name">Loading...</h2>
+                        <p class="text-muted" id="user-email">Loading...</p>
+                        <span class="badge" id="auth-provider">Google</span>
+                    </div>
+                </div>
+
+                <div class="profile-stats">
+                    <div class="stat-item">
+                        <div class="stat-value" id="total-activities">0</div>
+                        <div class="stat-label">Total Activities</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="total-meals">0</div>
+                        <div class="stat-label">Meals Logged</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="days-active">0</div>
+                        <div class="stat-label">Days Active</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="member-since">-</div>
+                        <div class="stat-label">Member Since</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="profile-card">
+                <h3>Account Information</h3>
+                <div class="form-group">
+                    <label for="display-name">Full Name</label>
+                    <input type="text" id="display-name" placeholder="Your full name">
+                </div>
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <div style="position: relative;">
+                        <input type="text" id="username" placeholder="Choose a unique username" maxlength="10"
+                            pattern="[a-zA-Z0-9_]+" style="padding-right: 100px;">
+                        <button class="btn btn-primary" onclick="updateUsername()"
+                            style="position: absolute; right: 5px; top: 5px; padding: 0.5rem 1rem; font-size: 0.875rem;">Save</button>
+                    </div>
+                    <small id="username-status" style="display: block; margin-top: 0.25rem;"></small>
+                </div>
+                <div class="form-group">
+                    <label for="user-email-display">Email</label>
+                    <input type="email" id="user-email-display" disabled>
+                </div>
+                <button class="btn btn-primary" onclick="updateProfile()">Save Changes</button>
+            </div>
+
+            <div class="profile-card">
+                <h3>Fitness Goals</h3>
+                <div class="form-group">
+                    <label for="daily-steps-goal">Daily Steps Goal</label>
+                    <input type="number" id="daily-steps-goal" placeholder="10000" value="10000">
+                </div>
+                <div class="form-group">
+                    <label for="daily-calories-goal">Daily Calories Goal</label>
+                    <input type="number" id="daily-calories-goal" placeholder="2000" value="2000">
+                </div>
+                <div class="form-group">
+                    <label for="daily-water-goal">Daily Water Goal (glasses)</label>
+                    <input type="number" id="daily-water-goal" placeholder="8" value="8">
+                </div>
+                <button class="btn btn-primary" onclick="updateGoals()">Update Goals</button>
+            </div>
+
+            <div class="profile-card danger-zone">
+                <button class="btn btn-danger" onclick="confirmDeleteAccount()">Delete Account</button>
+            </div>
+        </section>
+    </main>
+
+    <!-- Bottom Navigation (Mobile Only) -->
+    <nav class="bottom-nav">
+        <a href="index.html" class="bottom-nav-item">
+            <svg viewBox="0 0 24 24">
+                <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z" />
+            </svg>
+            <span>Home</span>
+        </a>
+        <a href="activity.html" class="bottom-nav-item">
+            <svg viewBox="0 0 24 24">
+                <path
+                    d="M20.38 8.57l-1.23 1.85a8 8 0 0 1-.22 7.58H5.07A8 8 0 0 1 8.8 5.28l.73 1.34 2-3-6.63-1A10 10 0 0 0 1.05 13H0a12 12 0 0 1 22.77-5.53l-2.39 1.1zM7 12a5 5 0 1 1 5 5 5 5 0 0 1-5-5z" />
+            </svg>
+            <span>Activity</span>
+        </a>
+        <a href="meals.html" class="bottom-nav-item">
+            <svg viewBox="0 0 24 24">
+                <path
+                    d="M11 9H9V2H7v7H5V2H3v7c0 2.12 1.66 3.84 3.75 3.97V22h2.5v-9.03C11.34 12.84 13 11.12 13 9V2h-2v7zm5-3v8h2.5v8H21V2c-2.76 0-5 2.24-5 4z" />
+            </svg>
+            <span>Meals</span>
+        </a>
+        <a href="insights.html" class="bottom-nav-item">
+            <svg viewBox="0 0 24 24">
+                <path d="M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 16.99z" />
+            </svg>
+            <span>Insights</span>
+        </a>
+        <a href="profile.html" class="bottom-nav-item active">
+            <svg viewBox="0 0 24 24">
+                <path
+                    d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+            </svg>
+            <span>Profile</span>
+        </a>
+    </nav>
+
+    <script type="module" src="js/supabase.js"></script>
+    <script type="module" src="js/data.js"></script>
+    <script type="module" src="js/app.js"></script>
+    <script type="module" src="js/auth.js"></script>
+    <script type="module">
+        import { supabase, getCurrentUser } from './js/supabase.js';
+
+        let currentUser = null;
+
+        async function loadProfile() {
+            currentUser = await getCurrentUser();
+
+            if (!currentUser) {
+                window.location.href = '/login.html';
+                return;
+            }
+
+            // Display user info
+            document.getElementById('user-name').textContent = currentUser.user_metadata?.name || currentUser.email.split('@')[0];
+            document.getElementById('user-email').textContent = currentUser.email;
+            document.getElementById('user-email-display').value = currentUser.email;
+            document.getElementById('display-name').value = currentUser.user_metadata?.name || currentUser.email.split('@')[0];
+
+            // Load username from profiles table
+            const { data: profile } = await supabase
+                .from('profiles')
+                .select('username')
+                .eq('id', currentUser.id)
+                .single();
+
+            if (profile?.username) {
+                document.getElementById('username').value = profile.username;
+            } else {
+                document.getElementById('username').placeholder = 'Choose a unique username';
+            }
+
+            // Show avatar or initials
+            if (currentUser.user_metadata?.avatar_url) {
+                document.getElementById('avatar-img').src = currentUser.user_metadata.avatar_url;
+                document.getElementById('avatar-img').style.display = 'block';
+                document.getElementById('avatar-placeholder').style.display = 'none';
+            } else {
+                const initials = (currentUser.user_metadata?.name || currentUser.email)
+                    .split(' ')
+                    .map(n => n[0])
+                    .join('')
+                    .toUpperCase()
+                    .substring(0, 2);
+                document.getElementById('avatar-initials').textContent = initials;
+            }
+
+            // Show auth provider
+            const provider = currentUser.app_metadata?.provider || 'email';
+            document.getElementById('auth-provider').textContent = provider.charAt(0).toUpperCase() + provider.slice(1);
+
+            // Load stats
+            await loadStats();
+
+            // Load goals from localStorage
+            const goals = JSON.parse(localStorage.getItem('fitness_goals') || '{}');
+            if (goals.steps) document.getElementById('daily-steps-goal').value = goals.steps;
+            if (goals.calories) document.getElementById('daily-calories-goal').value = goals.calories;
+            if (goals.water) document.getElementById('daily-water-goal').value = goals.water;
+        }
+
+        async function loadStats() {
+            // Get total activities
+            const { data: activities } = await supabase
+                .from('activities')
+                .select('id')
+                .eq('user_id', currentUser.id);
+            document.getElementById('total-activities').textContent = activities?.length || 0;
+
+            // Get total meals
+            const { data: meals } = await supabase
+                .from('meals')
+                .select('id')
+                .eq('user_id', currentUser.id);
+            document.getElementById('total-meals').textContent = meals?.length || 0;
+
+            // Get days active
+            const { data: stats } = await supabase
+                .from('daily_stats')
+                .select('date')
+                .eq('user_id', currentUser.id);
+            document.getElementById('days-active').textContent = stats?.length || 0;
+
+            // Member since
+            const memberSince = new Date(currentUser.created_at);
+            document.getElementById('member-since').textContent = memberSince.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+        }
+
+        async function updateUsername() {
+            const usernameInput = document.getElementById('username');
+            const statusEl = document.getElementById('username-status');
+            const newUsername = usernameInput.value.trim();
+
+            // Validation
+            if (!newUsername) {
+                statusEl.textContent = 'Username cannot be empty';
+                statusEl.style.color = 'var(--danger-color)';
+                return;
+            }
+
+            if (!/^[a-zA-Z0-9_]+$/.test(newUsername)) {
+                statusEl.textContent = 'Only letters, numbers, and underscores allowed';
+                statusEl.style.color = 'var(--danger-color)';
+                return;
+            }
+
+            if (newUsername.length > 10) {
+                statusEl.textContent = 'Username cannot be more than 10 characters';
+                statusEl.style.color = 'var(--danger-color)';
+                return;
+            }
+
+            statusEl.textContent = 'Checking availability...';
+            statusEl.style.color = 'var(--text-muted)';
+
+            // Check if username is already taken
+            const { data: existingUser, error: checkError } = await supabase
+                .from('profiles')
+                .select('id')
+                .eq('username', newUsername)
+                .neq('id', currentUser.id)
+                .single();
+
+            if (existingUser) {
+                statusEl.textContent = 'This username is already taken';
+                statusEl.style.color = 'var(--danger-color)';
+                return;
+            }
+
+            // Update username
+            const { error } = await supabase
+                .from('profiles')
+                .upsert({
+                    id: currentUser.id,
+                    username: newUsername,
+                    updated_at: new Date().toISOString()
+                });
+
+            if (error) {
+                console.error('Error updating username:', error);
+                statusEl.textContent = 'Error updating username';
+                statusEl.style.color = 'var(--danger-color)';
+            } else {
+                statusEl.textContent = 'Username saved successfully!';
+                statusEl.style.color = 'var(--success-color)';
+                setTimeout(() => {
+                    statusEl.textContent = '';
+                }, 3000);
+            }
+        }
+
+        async function updateProfile() {
+            const displayName = document.getElementById('display-name').value;
+
+            const { error } = await supabase.auth.updateUser({
+                data: { name: displayName }
+            });
+
+            if (error) {
+                alert('Error updating profile: ' + error.message);
+            } else {
+                alert('Profile updated successfully!');
+                await loadProfile();
+            }
+        }
+
+        function updateGoals() {
+            const goals = {
+                steps: parseInt(document.getElementById('daily-steps-goal').value),
+                calories: parseInt(document.getElementById('daily-calories-goal').value),
+                water: parseInt(document.getElementById('daily-water-goal').value)
+            };
+
+            localStorage.setItem('fitness_goals', JSON.stringify(goals));
+            alert('Goals updated successfully!');
+        }
+
+        async function confirmDeleteAccount() {
+            const confirmed = confirm('Are you sure you want to delete your account? This action cannot be undone.');
+
+            if (confirmed) {
+                const doubleConfirm = confirm('This will permanently delete all your data. Are you absolutely sure?');
+
+                if (doubleConfirm) {
+                    // Delete all user data
+                    await supabase.from('activities').delete().eq('user_id', currentUser.id);
+                    await supabase.from('meals').delete().eq('user_id', currentUser.id);
+                    await supabase.from('daily_stats').delete().eq('user_id', currentUser.id);
+
+                    // Sign out
+                    await supabase.auth.signOut();
+                    window.location.href = '/login.html';
+                }
+            }
+        }
+
+        // Make functions global
+        window.updateUsername = updateUsername;
+        window.updateProfile = updateProfile;
+        window.updateGoals = updateGoals;
+        window.confirmDeleteAccount = confirmDeleteAccount;
+
+        // Load profile on page load
+        loadProfile();
+    </script>
+</body>
+
+</html>
