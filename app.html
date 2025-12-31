@@ -200,77 +200,122 @@
     <script>
         document.getElementById('current-date').textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
 
-        async function editSteps() {
-            try {
-                const newValue = prompt('Enter steps count:');
-                if (newValue === null || newValue === '') return;
+        // Modal Logic
+        let currentEditType = null;
 
-                const steps = parseInt(newValue);
-                if (isNaN(steps) || steps < 0) {
-                    alert('Please enter a valid number');
-                    return;
-                }
-
-                await dataManager.ensureUser();
-                await dataManager.updateSteps(steps);
-                window.location.href = window.location.href;
-            } catch (error) {
-                console.error('editSteps error:', error);
-                alert('Failed to update steps: ' + error.message);
-            }
+        function openEditModal(type, title, label, placeholder) {
+            currentEditType = type;
+            document.getElementById('edit-modal').classList.add('active');
+            document.getElementById('modal-title').textContent = title;
+            document.getElementById('modal-label').textContent = label;
+            document.getElementById('edit-input').placeholder = placeholder;
+            document.getElementById('edit-input').value = '';
+            document.getElementById('edit-input').focus();
         }
 
-        async function editCalories() {
-            try {
-                const newValue = prompt('Enter calories burned:');
-                if (newValue === null || newValue === '') return;
-
-                const calories = parseInt(newValue);
-                if (isNaN(calories) || calories < 0) {
-                    alert('Please enter a valid number');
-                    return;
-                }
-
-                await dataManager.ensureUser();
-                await dataManager.updateCalories(calories);
-                window.location.href = window.location.href;
-            } catch (error) {
-                console.error('editCalories error:', error);
-                alert('Failed to update calories: ' + error.message);
-            }
+        function closeEditModal() {
+            document.getElementById('edit-modal').classList.remove('active');
+            currentEditType = null;
         }
 
-        async function editWater() {
-            try {
-                const newValue = prompt('Enter water intake in ml:');
-                if (newValue === null || newValue === '') return;
+        // Close on outside click
+        document.getElementById('edit-modal').addEventListener('click', (e) => {
+            if (e.target.id === 'edit-modal') closeEditModal();
+        });
 
-                const water = parseInt(newValue);
-                if (isNaN(water) || water < 0) {
-                    alert('Please enter a valid number');
-                    return;
+        // Close on Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && document.getElementById('edit-modal').classList.contains('active')) {
+                closeEditModal();
+            }
+        });
+
+        // Handle Save
+        document.getElementById('modal-save-btn').addEventListener('click', async () => {
+            const value = document.getElementById('edit-input').value;
+            if (!value) return;
+
+            const numValue = parseInt(value);
+            if (isNaN(numValue) || numValue < 0) {
+                alert('Please enter a valid number');
+                return;
+            }
+
+            try {
+                await dataManager.ensureUser();
+
+                if (currentEditType === 'steps') {
+                    await dataManager.updateSteps(numValue);
+                } else if (currentEditType === 'calories') {
+                    await dataManager.updateCalories(numValue);
+                } else if (currentEditType === 'water') {
+                    await dataManager.setWater(numValue);
                 }
 
-                await dataManager.ensureUser();
-                await dataManager.setWater(water);
-                window.location.href = window.location.href;
+                closeEditModal();
+                // Refresh page/dashboard to show new values
+                // In a full SPA we would just update the DOM, but reloading is safer for now to sync everything
+                window.location.reload();
             } catch (error) {
-                console.error('editWater error:', error);
-                alert('Failed to update water: ' + error.message);
+                console.error('Save error:', error);
+                alert('Failed to save: ' + error.message);
             }
+        });
+
+        // Enter key to save
+        document.getElementById('edit-input').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') document.getElementById('modal-save-btn').click();
+        });
+
+        // Public functions called by buttons
+        function editSteps() {
+            openEditModal('steps', 'Edit Steps Goal', 'Enter steps count:', '10000');
+        }
+
+        function editCalories() {
+            openEditModal('calories', 'Edit Calories Burned', 'Enter calories:', '500');
+        }
+
+        function editWater() {
+            openEditModal('water', 'Edit Water Intake', 'Enter water in ml:', '2500');
         }
 
         async function addWater() {
             try {
                 await dataManager.ensureUser();
                 await dataManager.updateWater(250);
-                window.location.href = window.location.href;
+                window.location.reload();
             } catch (error) {
                 console.error('addWater error:', error);
                 alert('Failed to add water: ' + error.message);
             }
         }
     </script>
+</body>
+
+<!-- Edit Modal -->
+<div id="edit-modal" class="modal-overlay">
+    <div class="modal-content glass-effect">
+        <div class="modal-header">
+            <h3 id="modal-title">Edit Value</h3>
+            <button class="modal-close" onclick="closeEditModal()">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+        <div class="modal-body">
+            <label id="modal-label" for="edit-input">Enter new value:</label>
+            <input type="number" id="edit-input" class="modal-input" placeholder="0">
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="closeEditModal()">Cancel</button>
+            <button class="btn btn-primary" id="modal-save-btn">Save</button>
+        </div>
+    </div>
+</div>
 </body>
 
 </html>
