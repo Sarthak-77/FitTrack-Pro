@@ -415,41 +415,101 @@ async function initInsights() {
         });
     });
 
-    // Download Summary Logic
+    // Download Summary Logic (PDF Report)
     document.getElementById('download-btn').addEventListener('click', async () => {
-        const history = await window.dataManager.getHistory();
-        const today = new Date().toLocaleDateString();
+        try {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
 
-        let cvsContent = `FitTrack Pro Summary - Generated on ${today}\n\n`;
-        cvsContent += `Date,Steps,Calories Burned\n`;
+            const history = await window.dataManager.getHistory();
+            const today = new Date().toLocaleDateString('en-US', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
 
-        // Use actual dates for the last 7 days
-        for (let i = 0; i < history.steps.length; i++) {
-            const date = new Date();
-            date.setDate(date.getDate() - (6 - i));
-            const dateStr = date.toLocaleDateString();
-            cvsContent += `${dateStr},${history.steps[i]},${history.calories[i]}\n`;
-        }
+            // --- Header ---
+            doc.setFontSize(22);
+            doc.setTextColor(99, 102, 241);
+            doc.text('FitTrack Pro', 14, 20);
 
-        const blob = new Blob([cvsContent], { type: 'text/csv' });
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `fittrack-summary-${today.replace(/\//g, '-')}.csv`;
-        document.body.appendChild(a); // Required for Firefox
-        a.click();
-        window.URL.revokeObjectURL(url);
-        document.body.removeChild(a);
+            doc.setFontSize(10);
+            doc.setTextColor(100);
+            doc.text('Your Personal Wellness Companion', 14, 26);
 
-        // Show Success Modal
-        const successModal = document.getElementById('success-modal');
-        if (successModal) {
-            successModal.querySelector('#success-title').textContent = 'Download Started!';
-            successModal.querySelector('#success-message').textContent = 'Your summary file has been downloaded to your device.';
-            successModal.classList.add('active');
-        } else {
-            // Fallback if modal not present (e.g. on other pages)
-            alert('Summary Downloaded!');
+            doc.setFontSize(16);
+            doc.setTextColor(40);
+            doc.text('Weekly Wellness Report', 14, 40);
+
+            doc.setFontSize(10);
+            doc.setTextColor(100);
+            doc.text(`Generated on: ${today}`, 14, 46);
+
+            // --- Summary Statistics ---
+            const totalSteps = history.steps.reduce((a, b) => a + b, 0);
+            const totalCalories = history.calories.reduce((a, b) => a + b, 0);
+            const avgSteps = Math.round(totalSteps / 7);
+
+            doc.setFillColor(245, 247, 250);
+            doc.roundedRect(14, 55, 182, 30, 3, 3, 'F');
+
+            doc.setFontSize(12);
+            doc.setTextColor(60);
+            doc.text('This Week At a Glance:', 20, 65);
+
+            doc.setFontSize(10);
+            doc.setTextColor(100);
+            doc.text(`Total Steps: ${totalSteps.toLocaleString()}`, 20, 75);
+            doc.text(`Avg Daily Steps: ${avgSteps.toLocaleString()}`, 80, 75);
+            doc.text(`Total Burned: ${totalCalories.toLocaleString()} kcal`, 140, 75);
+
+            // --- Data Table ---
+            const tableData = [];
+            for (let i = history.steps.length - 1; i >= 0; i--) {
+                const date = new Date();
+                date.setDate(date.getDate() - (6 - i));
+                const dateStr = date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+
+                tableData.push([
+                    dateStr,
+                    history.steps[i].toLocaleString(),
+                    `${history.calories[i]} kcal`,
+                    history.steps[i] >= 10000 ? 'Goal Met ⭐' : '-'
+                ]);
+            }
+
+            doc.autoTable({
+                startY: 95,
+                head: [['Date', 'Steps', 'Calories Burned', 'Status']],
+                body: tableData,
+                theme: 'grid',
+                headStyles: { fillColor: [99, 102, 241], textColor: 255 },
+                alternateRowStyles: { fillColor: [249, 250, 251] },
+                styles: { fontSize: 10, cellPadding: 3 }
+            });
+
+            // --- Footer ---
+            const finalY = doc.lastAutoTable.finalY + 10;
+            doc.setFontSize(8);
+            doc.setTextColor(150);
+            doc.text('Keep pushing your limits! - FitTrack Pro Team', 14, finalY);
+
+            // Save PDF
+            const filename = `fittrack-report-${new Date().toISOString().split('T')[0]}.pdf`;
+            doc.save(filename);
+
+            // Show Success Modal
+            const successModal = document.getElementById('success-modal');
+            if (successModal) {
+                successModal.querySelector('#success-title').textContent = 'Report Ready!';
+                successModal.querySelector('#success-message').textContent = 'Your enhanced PDF report has been downloaded.';
+                successModal.classList.add('active');
+            }
+
+        } catch (error) {
+            console.error('PDF Generation Error:', error);
+            alert('Failed to generate PDF. Please try again.');
         }
     });
 }
