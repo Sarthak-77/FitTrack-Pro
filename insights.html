@@ -96,6 +96,43 @@
         </a>
     </nav>
 
+    <!-- Confirmation Modal -->
+    <div id="confirm-modal" class="modal-overlay">
+        <div class="modal-content glass-effect">
+            <div class="modal-header">
+                <h3 id="confirm-title">Confirm Action</h3>
+                <button class="modal-close" onclick="closeConfirmModal()">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p id="confirm-message" class="text-muted">Are you sure you want to proceed?</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeConfirmModal()">Cancel</button>
+                <button class="btn btn-danger" id="confirm-btn">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="success-modal" class="modal-overlay">
+        <div class="modal-content glass-effect" style="text-align: center;">
+            <div class="modal-body" style="margin: 0; padding: 2rem 0;">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">🎉</div>
+                <h3 id="success-title" class="mb-2"
+                    style="background: var(--gradient-main); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; font-size: 1.5rem;">
+                    Success!</h3>
+                <p id="success-message" class="text-muted">Action completed successfully.</p>
+            </div>
+            <button class="btn btn-primary" onclick="closeSuccessModal()" style="width: 100%;">Awesome!</button>
+        </div>
+    </div>
+
     <script type="module" src="js/supabase.js"></script>
     <script type="module" src="js/data.js"></script>
     <script type="module" src="js/app.js"></script>
@@ -111,6 +148,10 @@
             }
         }
         loadNavAvatar();
+
+        // Modal Logic
+        window.closeConfirmModal = () => document.getElementById('confirm-modal').classList.remove('active');
+        window.closeSuccessModal = () => document.getElementById('success-modal').classList.remove('active');
     </script>
 </body>
 

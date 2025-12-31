@@ -396,14 +396,61 @@ async function initInsights() {
     renderLineChart('steps-chart', history.steps, stepsMax, '#3b82f6'); // Blue for steps
     renderLineChart('calories-chart', history.calories, caloriesMax, '#f97316'); // Orange for calories
 
-    document.getElementById('reset-btn').addEventListener('click', async () => {
-        if (confirm('Are you sure you want to reset all data?')) {
+    // Reset Dashboard Logic
+    document.getElementById('reset-btn').addEventListener('click', () => {
+        const modal = document.getElementById('confirm-modal');
+        const confirmBtn = document.getElementById('confirm-btn');
+
+        modal.classList.add('active');
+        document.getElementById('confirm-title').textContent = 'Reset Dashboard';
+        document.getElementById('confirm-message').textContent = 'This will permanently delete all your activity logs, meals, and daily stats. This action cannot be undone.';
+
+        // Remove previous listeners to prevent stacking
+        const newBtn = confirmBtn.cloneNode(true);
+        confirmBtn.parentNode.replaceChild(newBtn, confirmBtn);
+
+        newBtn.addEventListener('click', async () => {
+            modal.classList.remove('active');
             await window.dataManager.resetDashboard();
-        }
+        });
     });
 
-    document.getElementById('download-btn').addEventListener('click', () => {
-        showModal('Summary Downloaded! (Simulated)');
+    // Download Summary Logic
+    document.getElementById('download-btn').addEventListener('click', async () => {
+        const history = await window.dataManager.getHistory();
+        const today = new Date().toLocaleDateString();
+
+        let cvsContent = `FitTrack Pro Summary - Generated on ${today}\n\n`;
+        cvsContent += `Date,Steps,Calories Burned\n`;
+
+        // Use actual dates for the last 7 days
+        for (let i = 0; i < history.steps.length; i++) {
+            const date = new Date();
+            date.setDate(date.getDate() - (6 - i));
+            const dateStr = date.toLocaleDateString();
+            cvsContent += `${dateStr},${history.steps[i]},${history.calories[i]}\n`;
+        }
+
+        const blob = new Blob([cvsContent], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `fittrack-summary-${today.replace(/\//g, '-')}.csv`;
+        document.body.appendChild(a); // Required for Firefox
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+
+        // Show Success Modal
+        const successModal = document.getElementById('success-modal');
+        if (successModal) {
+            successModal.querySelector('#success-title').textContent = 'Download Started!';
+            successModal.querySelector('#success-message').textContent = 'Your summary file has been downloaded to your device.';
+            successModal.classList.add('active');
+        } else {
+            // Fallback if modal not present (e.g. on other pages)
+            alert('Summary Downloaded!');
+        }
     });
 }
 
