@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // Initialize page-specific logic
         const path = window.location.pathname;
-        if (path.includes('index.html') || path === '/') {
+        if (path.includes('app.html') || path === '/') {
             initDashboard();
         } else if (path.includes('activity.html')) {
             initActivityLog();
