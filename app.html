@@ -197,6 +197,12 @@
         }
         loadNavAvatar();
     </script>
+    <script type="module">
+        import { showAlert, showConfirm, showPrompt } from './js/modals.js';
+        window.showAlert = showAlert;
+        window.showConfirm = showConfirm;
+        window.showPrompt = showPrompt;
+    </script>
     <script>
         document.getElementById('current-date').textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
 
@@ -237,7 +243,7 @@
 
             const numValue = parseInt(value);
             if (isNaN(numValue) || numValue < 0) {
-                alert('Please enter a valid number');
+                showAlert('Invalid Input', 'Please enter a valid number', 'warning');
                 return;
             }
 
@@ -258,7 +264,7 @@
                 window.location.reload();
             } catch (error) {
                 console.error('Save error:', error);
-                alert('Failed to save: ' + error.message);
+                showAlert('Save Error', 'Failed to save: ' + error.message, 'error');
             }
         });
 
@@ -287,7 +293,7 @@
                 window.location.reload();
             } catch (error) {
                 console.error('addWater error:', error);
-                alert('Failed to add water: ' + error.message);
+                showAlert('Error', 'Failed to add water: ' + error.message, 'error');
             }
         }
     </script>

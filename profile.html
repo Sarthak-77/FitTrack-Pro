@@ -157,6 +157,9 @@
     <script type="module" src="js/auth.js"></script>
     <script type="module">
         import { supabase, getCurrentUser } from './js/supabase.js';
+        import { showAlert, showConfirm } from './js/modals.js';
+        window.showAlert = showAlert;
+        window.showConfirm = showConfirm;
 
         let currentUser = null;
 
@@ -314,9 +317,9 @@
             });
 
             if (error) {
-                alert('Error updating profile: ' + error.message);
+                showAlert('Error', 'Error updating profile: ' + error.message, 'error');
             } else {
-                alert('Profile updated successfully!');
+                showAlert('Success', 'Profile updated successfully!', 'success');
                 await loadProfile();
             }
         }
@@ -329,14 +332,20 @@
             };
 
             localStorage.setItem('fitness_goals', JSON.stringify(goals));
-            alert('Goals updated successfully!');
+            showAlert('Success', 'Goals updated successfully!', 'success');
         }
 
         async function confirmDeleteAccount() {
-            const confirmed = confirm('Are you sure you want to delete your account? This action cannot be undone.');
+            const confirmed = await showConfirm(
+                'Delete Account',
+                'Are you sure you want to delete your account? This action cannot be undone.'
+            );
 
             if (confirmed) {
-                const doubleConfirm = confirm('This will permanently delete all your data. Are you absolutely sure?');
+                const doubleConfirm = await showConfirm(
+                    'Final Warning',
+                    'This will permanently delete all your data. Are you absolutely sure?'
+                );
 
                 if (doubleConfirm) {
                     // Delete all user data

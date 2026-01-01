@@ -264,10 +264,16 @@ async function renderActivities(filter = 'all') {
 window.deleteActivity = async function (id) {
     // Ensure dataManager is initialized
     await window.dataManager.ensureUser();
-    if (confirm('Are you sure you want to delete this activity?')) {
+
+    const confirmed = await window.showConfirm(
+        'Delete Activity',
+        'Are you sure you want to delete this activity? This action cannot be undone.'
+    );
+
+    if (confirmed) {
         await window.dataManager.deleteActivity(id);
         await renderActivities();
-        showModal('Activity deleted successfully!');
+        window.showAlert('Success', 'Activity deleted successfully!', 'success');
     }
 };
 
@@ -278,40 +284,37 @@ window.editActivity = async function (id) {
     const activity = activities.find(a => a.id === id);
 
     if (!activity) {
-        alert('Activity not found. Please refresh the page and try again.');
+        window.showAlert('Not Found', 'Activity not found. Please refresh the page and try again.', 'error');
         return;
     }
 
-    // Prompt for new values
-    const name = prompt('Activity Name:', activity.name);
-    if (name === null) return; // User cancelled
+    // Use modern prompt modal with multiple fields
+    const result = await window.showPrompt('Edit Activity', [
+        { name: 'name', label: 'Activity Name', type: 'text', value: activity.name, required: true },
+        { name: 'duration', label: 'Duration (minutes)', type: 'number', value: activity.duration, required: true },
+        { name: 'calories', label: 'Calories Burned', type: 'number', value: activity.calories, required: true },
+        { name: 'type', label: 'Time of Day', type: 'text', value: activity.type, placeholder: 'Morning/Afternoon/Evening', required: true }
+    ]);
 
-    const duration = prompt('Duration (minutes):', activity.duration);
-    if (duration === null) return;
-
-    const calories = prompt('Calories Burned:', activity.calories);
-    if (calories === null) return;
-
-    const type = prompt('Time of Day (Morning/Afternoon/Evening):', activity.type);
-    if (type === null) return;
+    if (!result) return; // User cancelled
 
     // Validate inputs
-    if (name && duration && calories && type) {
-        const result = await window.dataManager.updateActivity(id, {
-            name: name.trim(),
-            duration: parseInt(duration),
-            calories: parseInt(calories),
-            type: type.trim()
+    if (result.name && result.duration && result.calories && result.type) {
+        const updateResult = await window.dataManager.updateActivity(id, {
+            name: result.name.trim(),
+            duration: parseInt(result.duration),
+            calories: parseInt(result.calories),
+            type: result.type.trim()
         });
 
-        if (result && result.error) {
-            alert('Failed to update activity: ' + (result.error.message || 'Unknown error'));
+        if (updateResult && updateResult.error) {
+            window.showAlert('Update Failed', 'Failed to update activity: ' + (updateResult.error.message || 'Unknown error'), 'error');
         } else {
             await renderActivities();
-            showModal('Activity updated successfully!');
+            window.showAlert('Success', 'Activity updated successfully!', 'success');
         }
     } else {
-        alert('Please fill in all fields');
+        window.showAlert('Invalid Input', 'Please fill in all fields', 'warning');
     }
 };
 
@@ -515,7 +518,7 @@ async function initInsights() {
 
         } catch (error) {
             console.error('PDF Generation Error:', error);
-            alert('Failed to generate PDF. Please try again.');
+            window.showAlert('PDF Error', 'Failed to generate PDF. Please try again.', 'error');
         }
     });
 }
